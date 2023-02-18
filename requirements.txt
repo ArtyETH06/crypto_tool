@@ -1,0 +1,4 @@
+colorama==0.4.4
+pwn==1.0
+pycryptodome==3.17
+utils==1.0.1
