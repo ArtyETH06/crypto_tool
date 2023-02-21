@@ -21,6 +21,7 @@ if __name__ == "__main__":
     #Les différents Arg
     parser.add_argument("-m", type=int, help="The mode that you want to choose")
     parser.add_argument("-c", type=str, help="The content that you want to encode/decode (can be a string or a tab)")
+    parser.add_argument("-r", type=int, help="The Rotchar shift-level (ONLY FOR ROT USAGE)")
 
     #"Création" des arguments
     args = parser.parse_args()
@@ -42,13 +43,38 @@ def string_to_binary(to_encode):
 #===============================================================================================================
 
 
-#=============================================String --> ROT13============================================
-def string_to_rot13(to_encode):
-    # Chiffrement en utilisant ROT13
-    ciphertext = codecs.encode(to_encode, 'rot13')
-    print(Fore.CYAN + Style.BRIGHT + "===============================================String --> ROT13======================================\n" + Fore.GREEN + Style.BRIGHT + "Encoded_string: " + Fore.YELLOW + Style.BRIGHT + args.c + Fore.GREEN + Style.BRIGHT +"\nMethod: " + Fore.YELLOW + Style.BRIGHT +" String --> ROT13\n"+ Fore.GREEN + Style.BRIGHT + "Result: " + Fore.YELLOW + Style.BRIGHT + str(ciphertext))
+#=============================================String --> ROT============================================
+
+
+#Pour trouver la position d'une lettre 
+def position(letter_temp):
+  return ord(letter_temp.lower()) - ord('a')
+
+def string_to_rot(to_encode,shift_level):
+    letter = ["a", "b", "c", "d","e", "f", "g", "h","i", "j", "k", "l","m", "n", "o", "p","q", "r", "s", "t","u", "v", "w", "x","y", "z"]
+    i = 0
+    letter_temp = ""
+    final_word = ""
+
+    if shift_level < 1 or shift_level > 26:
+        raise ValueError(Fore.RED + Style.BRIGHT + "Shift level must be between 1 and 26")
+
+    while i < len(to_encode):
+        letter_temp = to_encode[i]
+        pos = position(letter_temp)
+        print(pos)
+        nb_rot = pos + shift_level
+        letter_rot = nb_rot % 26
+        letter_rot_final = letter[letter_rot]
+        final_word = str(final_word) + str(letter_rot_final)  
+        i = i + 1
+
+
+
+    print(Fore.CYAN + Style.BRIGHT + "===============================================String --> ROT" + str(shift_level) + "======================================\n" + Fore.GREEN + Style.BRIGHT + "Encoded_string: " + Fore.YELLOW + Style.BRIGHT + to_encode + Fore.GREEN + Style.BRIGHT +"\nMethod: " + Fore.YELLOW + Style.BRIGHT +" String --> ROT" + str(shift_level) + "\n"+ Fore.GREEN + Style.BRIGHT + "Result: " + Fore.YELLOW + Style.BRIGHT + str(final_word))
     print(Fore.CYAN + Style.BRIGHT +"===========================================================================================================")
-    return str(ciphertext)
+
+    return str(final_word)
 #===============================================================================================================
 
 #===========================================String--> base64===================================================
@@ -144,20 +170,21 @@ def binary_to_string(to_encode):
     print(Fore.CYAN + Style.BRIGHT +"===========================================================================================================")
 #===============================================================================================================
 
-#=============================================ROT13 --> String============================================
-def rot13_to_string(to_encode):
-    decoded_string = ""
+#=============================================ROT13 --> String============================================0
+def decode_rot(text, n):
+    """Décode le texte en utilisant le ROT n"""
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    shift = alphabet[n:] + alphabet[:n]
+    table = str.maketrans(alphabet, shift)
+    return text.translate(table)
 
-    for char in to_encode:
-        if char.isalpha():
-            if char.isupper():
-                decoded_char = chr((ord(char) - 65 + 13) % 26 + 65)  # Décale la lettre majuscule de 13 positions dans l'alphabet
-            else:
-                decoded_char = chr((ord(char) - 97 + 13) % 26 + 97)  # Décale la lettre minuscule de 13 positions dans l'alphabet
-        else:
-            decoded_char = char  # Garde les caractères qui ne sont pas des lettres inchangés
-        decoded_string += decoded_char  # Ajoute le caractère décodé à la chaîne résultat
-    print(Fore.CYAN + Style.BRIGHT + "===============================================ROT13 --> String======================================\n" + Fore.GREEN + Style.BRIGHT + "Encoded_string: " + Fore.YELLOW + Style.BRIGHT + args.c + Fore.GREEN + Style.BRIGHT +"\nMethod: " + Fore.YELLOW + Style.BRIGHT +" ROT13 --> String\n"+ Fore.GREEN + Style.BRIGHT + "Result: " + Fore.YELLOW + Style.BRIGHT + str(decoded_string))
+
+def rot_to_string(to_encode):
+
+    print(Fore.CYAN + Style.BRIGHT + "===============================================ROT --> String======================================\n" + Fore.GREEN + Style.BRIGHT + "Encoded_string: " + Fore.YELLOW + Style.BRIGHT + args.c + Fore.GREEN + Style.BRIGHT +"\nMethod: " + Fore.YELLOW + Style.BRIGHT +" ROT --> String\n"+ Fore.GREEN + Style.BRIGHT + "Result: " + Fore.YELLOW + Style.BRIGHT)
+    """Décode le texte en utilisant tous les ROTs possibles entre 0 et 27"""
+    for i in range(27):
+        print("ROT {}: {}".format(i, decode_rot(to_encode, i)))
     print(Fore.CYAN + Style.BRIGHT +"===========================================================================================================")
 #===============================================================================================================
 
@@ -274,7 +301,7 @@ if args.m == 1:
     string_to_binary(args.c)
 
 elif args.m == 2:
-    string_to_rot13(args.c)
+    string_to_rot(args.c, args.r)
 
 elif args.m == 3:
    string_to_base64(args.c)
@@ -295,7 +322,7 @@ elif args.m == 8:
     binary_to_string(args.c)
 
 elif args.m == 9:
-    rot13_to_string(args.c)
+    rot_to_string(args.c)
 
 elif args.m == 10:
     base64_to_string(args.c)
