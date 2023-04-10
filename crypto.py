@@ -8,8 +8,12 @@ import codecs
 from urllib.parse import quote
 from urllib import *
 import urllib.parse
+import sys
+import os
 
 
+# Efface le contenu du terminal (utile pour la lisibilité)
+os.system('cls||clear')
 
 
 #=================================================Arguments======================================================
@@ -28,6 +32,16 @@ if __name__ == "__main__":
 
 #================================================================================================================
 
+
+#====================================================Errors=======================================================
+    if len(sys.argv) == 0:
+        parser.print_help()
+        sys.exit(Fore.RED + Style.BRIGHT + "Error: Argument(s) expected" + Fore.WHITE + " ")
+
+    if args.m > 15:
+        sys.exit(Fore.RED + "Argument Error: The value of -m should be between 1 and 14" + Fore.WHITE + " ")
+
+#================================================================================================================
 
 '''
 ====================================================================String --> XXX==================================================================================
@@ -295,7 +309,11 @@ def morse_to_string(to_encode):
 
 
 
+
+
+
 #===============================================Réalisation des fonctions========================================
+
 #On réalise les fonctions définies plus haut
 if args.m == 1:
     string_to_binary(args.c)
@@ -339,8 +357,11 @@ elif args.m == 13:
 elif args.m == 14:
     morse_to_string(args.c)
 
+
+
 #Si le mode n'est pas prit en compte
 else:
     print(Fore.RED + Style.BRIGHT + "Fatal Error,mode not provided or not found")
 
     #==================================================================================================================
+
